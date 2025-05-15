@@ -20,6 +20,7 @@ This is an Alpine-based container hosting an Ergo IRC server.
 - [Skarnet S6](https://skarnet.org/software/s6/)
 - [s6-overlay](https://github.com/just-containers/s6-overlay)
 - [Ergo](https://ergo.chat/)
+- [MariaDB](https://mariadb.org/)
 
 ## Testing
 
