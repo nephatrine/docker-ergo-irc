@@ -55,8 +55,8 @@ server:
             # this is a standard TLS configuration with a single certificate;
             # see the manual for instructions on how to configure SNI
             # tls:
-            #     cert: fullchain.pem
-            #     key: privkey.pem
+            #     cert: /mnt/config/ssl/live/fullchain.pem # mkcert (remove if using own certs)
+            #     key: /mnt/config/ssl/live/privkey.pem
             # 'proxy' should typically be false. It's for cloud load balancers that
             # always send a PROXY protocol header ahead of the connection. See the
             # manual ("Reverse proxies") for more details.
@@ -77,8 +77,8 @@ server:
         # ":8097":
         #     websocket: true
         #     tls:
-        #         cert: fullchain.pem
-        #         key: privkey.pem
+        #         cert: /mnt/config/ssl/live/fullchain.pem
+        #         key: /mnt/config/ssl/live/privkey.pem
 
     # sets the permissions for Unix listen sockets. on a typical Linux system,
     # the default is 0775 or 0755, which prevents other users/groups from connecting

@@ -26,5 +26,7 @@ fi
 if [ ! -d /mnt/config/data/ergo ]; then
   /command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/data/ergo
 fi
-/command/s6-setuidgid guardian /usr/local/bin/ergo mkcerts --conf /mnt/config/etc/ircd.yaml
+if grep -q "# mkcert" /mnt/config/etc/ircd.yaml; then
+  /command/s6-setuidgid guardian /usr/local/bin/ergo mkcerts --conf /mnt/config/etc/ircd.yaml
+fi
 /command/s6-setuidgid guardian /usr/local/bin/ergo run --conf /mnt/config/etc/ircd.yaml
