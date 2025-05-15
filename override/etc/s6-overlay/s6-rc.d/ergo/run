@@ -17,6 +17,9 @@ fi
 
 if [ ! -e "/mnt/config/etc/ircd.yaml" ]; then
   /command/s6-setuidgid guardian /bin/cp /etc/ergo/ircd.yaml /mnt/config/etc/ircd.yaml
+  if [ -n "${MARIADB_ERGO_PASSWORD}" ]; then
+    /command/s6-setuidgid guardian /bin/sed -i "s/hunter2/${MARIADB_ERGO_PASSWORD}/" /mnt/config/etc/ircd.yaml
+  fi
 fi
 /command/s6-setuidgid guardian /bin/cp /etc/ergo/default.yaml /mnt/config/etc/ircd.yaml.example
 
