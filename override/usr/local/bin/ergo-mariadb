@@ -1,0 +1,43 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-License-Identifier: ISC
+
+/bin/sleep 5
+
+if [[ ! -d /mnt/config/data/mariadb/ergo_history ]]; then
+	while ! /usr/bin/mariadb --protocol=socket -uroot -hlocalhost --socket=/var/run/mysqld/mysqld.sock --database=mysql --binary-mode -e 'SELECT 1' >/dev/null 2>&1; do
+		echo "waiting for mariadbd..."
+		/bin/sleep 5
+	done
+
+	if [[ -z "${MARIADB_ERGO_PASSWORD}" ]]; then
+		echo "Please set MARIADB_ERGO_PASSWORD in your environment."
+		exit 1
+	fi
+	if [[ -z "${MARIADB_ROOT_PASSWORD}" ]]; then
+		MARIADB_ROOT_PASSWORD="${MARIADB_ERGO_PASSWORD}"
+	fi
+
+	escape_password() {
+		local password="$1"
+		printf '%q' "$password"
+	}
+
+	MARIADB_ROOT_ESCAPED=$(escape_password "$MARIADB_ROOT_PASSWORD")
+	MARIADB_ERGO_ESCAPED=$(escape_password "$MARIADB_ERGO_PASSWORD")
+
+	MYSQL_PWD='' /usr/bin/mariadb --protocol=socket -uroot -hlocalhost --socket=/var/run/mysqld/mysqld.sock --database=mysql --binary-mode <<-EOSQL
+		SET @orig_sql_log_bin= @@SESSION.SQL_LOG_BIN;
+		SET @@SESSION.SQL_LOG_BIN=0;
+		SET @@SESSION.SQL_MODE=REPLACE(@@SESSION.SQL_MODE, 'NO_BACKSLASH_ESCAPES', '');
+
+		DROP USER IF EXISTS root@'127.0.0.1', root@'::1';
+		EXECUTE IMMEDIATE CONCAT('DROP USER IF EXISTS root@\'', @@hostname,'\'');
+		SET PASSWORD FOR 'root'@'localhost'= PASSWORD('${MARIADB_ROOT_ESCAPED}');
+
+		CREATE USER 'ergo'@'localhost' IDENTIFIED BY '${MARIADB_ERGO_ESCAPED}';
+		SET @@SESSION.SQL_LOG_BIN=@orig_sql_log_bin;
+		CREATE DATABASE ergo_history;
+		GRANT ALL PRIVILEGES ON ergo_history.* to 'ergo'@'localhost';
+	EOSQL
+fi

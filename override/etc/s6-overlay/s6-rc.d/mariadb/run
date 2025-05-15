@@ -1,0 +1,17 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: 2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-License-Identifier: ISC
+
+if [ ! -d /run/mysqld ]; then
+	/bin/mkdir -p /run/mysqld
+	/bin/chown -R guardian:users /run/mysqld
+fi
+
+if [ ! -d /mnt/config/data/mariadb ]; then
+	/command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/data/mariadb
+fi
+if [ ! -d /mnt/config/data/mariadb/mysql ]; then
+	/command/s6-setuidgid guardian /usr/bin/mariadb-install-db --datadir=/mnt/config/data/mariadb
+fi
+
+/command/s6-setuidgid guardian /usr/bin/mariadbd --datadir=/mnt/config/data/mariadb
