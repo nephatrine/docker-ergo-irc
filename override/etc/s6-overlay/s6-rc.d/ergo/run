@@ -5,8 +5,8 @@
 # shellcheck shell=sh
 
 if [ ! -d /mnt/config/data/mariadb/ergo_history ]; then
-	echo "waiting for ergo_history..."
-	/bin/sleep 5
+  echo "waiting for ergo_history..."
+  /bin/sleep 5
   exit 1
 fi
 
@@ -23,6 +23,8 @@ if [ ! -e "/mnt/config/etc/ircd.yaml" ]; then
 fi
 /command/s6-setuidgid guardian /bin/cp /etc/ergo/default.yaml /mnt/config/etc/ircd.yaml.example
 
-/command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/data/ergo
-/command/s6-setuidgid guardian /usr/local/bin/ergo mkcerts --conf /etc/ergo/ircd.yaml
-/command/s6-setuidgid guardian /usr/local/bin/ergo run --conf /etc/ergo/ircd.yaml
+if [ ! -d /mnt/config/data/ergo ]; then
+  /command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/data/ergo
+fi
+/command/s6-setuidgid guardian /usr/local/bin/ergo mkcerts --conf /mnt/config/etc/ircd.yaml
+/command/s6-setuidgid guardian /usr/local/bin/ergo run --conf /mnt/config/etc/ircd.yaml
