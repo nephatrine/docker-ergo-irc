@@ -12,5 +12,7 @@ services:
       MARIADB_ERGO_PASSWORD: hunter2
     ports:
       - "6667:6667/tcp"
+      - "6697:6697/tcp"
+      - "8097:8097/tcp"
     volumes:
       - /mnt/containers/ergo-irc:/mnt/config
