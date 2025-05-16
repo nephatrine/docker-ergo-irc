@@ -71,6 +71,61 @@ jobs:
         with:
           title: "FAIL: build_images (${{matrix.platform}})"
           webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  push_images:
+    needs: [build_images]
+    strategy:
+      matrix:
+        include:
+          - platform: amd64
+            nephhub: amd64
+            dockerhub: amd64
+          - platform: arm64/v8
+            nephhub: arm64
+            dockerhub: arm64
+          - platform: arm/v7
+            nephhub: arm32
+            dockerhub: armv7
+          - platform: 386
+            nephhub: ia32
+            dockerhub: ia32
+          - platform: riscv64
+            nephhub: riscv64
+            dockerhub: riscv64
+    runs-on: nephnet-fast
+    continue-on-error: true
+    steps:
+      - name: DockerHub Login (Push)
+        continue-on-error: true
+        id: dhlogin
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Wait to Retry
+        if: steps.dhlogin.outcome != 'success'
+        run: sleep 60
+      - name: Retry DockerHub Login (Push)
+        if: steps.dhlogin.outcome != 'success'
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Tag & Push
+        run: |
+          docker pull code.nephatrine.net/nephnet/ergo-irc:2.15.0-${{matrix.nephhub}} --platform linux/${{matrix.platform}}
+          docker tag code.nephatrine.net/nephnet/ergo-irc:2.15.0-${{matrix.nephhub}} nephatrine/${{matrix.dockerhub}}:ergo-irc-2.15.0
+          docker rmi code.nephatrine.net/nephnet/ergo-irc:2.15.0-${{matrix.nephhub}}
+          docker push nephatrine/${{matrix.dockerhub}}:ergo-irc-2.15.0
+          docker rmi nephatrine/${{matrix.dockerhub}}:ergo-irc-2.15.0
+      - name: Clean Up
+        if: failure()
+        run: docker rmi nephatrine/${{matrix.dockerhub}}:ergo-irc-2.15.0
+      - name: Notify Discord
+        uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
+        if: failure()
+        with:
+          title: "FAIL: push_images (${{matrix.platform}})"
+          webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
   build_manifest:
     needs: [build_images]
     runs-on: nephnet-fast
@@ -114,3 +169,58 @@ jobs:
         with:
           title: "FAIL: build_manifest"
           webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  push_manifest:
+    needs: [push_images]
+    runs-on: nephnet-fast
+    continue-on-error: true
+    steps:
+      - name: DockerHub Login (Push)
+        continue-on-error: true
+        id: dhlogin
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Wait to Retry
+        if: steps.dhlogin.outcome != 'success'
+        run: sleep 60
+      - name: Retry DockerHub Login (Push)
+        if: steps.dhlogin.outcome != 'success'
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Docker Manifest
+        continue-on-error: true
+        id: manifest
+        run: |
+          export IMAGELIST="--amend nephatrine/amd64:ergo-irc-2.15.0 --amend nephatrine/ia32:ergo-irc-2.15.0 --amend nephatrine/arm64:ergo-irc-2.15.0 --amend nephatrine/armv7:ergo-irc-2.15.0 --amend nephatrine/riscv64:ergo-irc-2.15.0"
+          for manifestName in 2.15.0 2.15 2 latest; do docker manifest rm nephatrine/ergo-irc:${manifestName} || true; docker manifest create nephatrine/ergo-irc:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/ergo-irc:${manifestName}; done
+      - name: Wait to Retry
+        if: steps.manifest.outcome != 'success'
+        run: sleep 60
+      - name: Retry Docker Manifest
+        if: steps.manifest.outcome != 'success'
+        run: |
+          export IMAGELIST="--amend nephatrine/amd64:ergo-irc-2.15.0 --amend nephatrine/ia32:ergo-irc-2.15.0 --amend nephatrine/arm64:ergo-irc-2.15.0 --amend nephatrine/armv7:ergo-irc-2.15.0 --amend nephatrine/riscv64:ergo-irc-2.15.0"
+          for manifestName in 2.15.0 2.15 2 latest; do docker manifest rm nephatrine/ergo-irc:${manifestName} || true; docker manifest create nephatrine/ergo-irc:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/ergo-irc:${manifestName}; done
+      - name: Notify Discord
+        uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
+        if: failure()
+        with:
+          title: "FAIL: push_manifest"
+          webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  update_readme:
+    needs: [push_manifest]
+    runs-on: nephnet-fast
+    continue-on-error: true
+    steps:
+      - name: Checkout Repository
+        uses: https://code.nephatrine.net/NephHub/checkout@v4
+      - name: Docker Describe
+        continue-on-error: true
+        uses: https://github.com/peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+          repository: nephatrine/ergo-irc

@@ -7,6 +7,7 @@ SPDX-License-Identifier: ISC
 
 [![NephCode](https://img.shields.io/static/v1?label=Git&message=NephCode&color=teal)](https://code.nephatrine.net/NephNET/docker-ergo-irc)
 [![Registry](https://img.shields.io/static/v1?label=OCI&message=NephCode&color=blue)](https://code.nephatrine.net/NephNET/-/packages/container/ergo-irc/latest)
+[![DockerHub](https://img.shields.io/static/v1?label=OCI&message=DockerHub&color=blue)](https://hub.docker.com/repository/docker/nephatrine/ergo-irc/general)
 
 This is an Alpine-based container hosting an Ergo IRC server.
 
