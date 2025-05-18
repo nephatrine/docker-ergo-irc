@@ -19,7 +19,7 @@ proxy to centralize your SSL/TLS setup in
 
 ## Supported Tags
 
-- `ergo-irc:2.15.0`: Ergo 2.15.0
+- `ergo-irc:2.16.0`: Ergo 2.16.0
 
 ## Software
 

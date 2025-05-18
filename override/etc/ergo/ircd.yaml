@@ -1,4 +1,8 @@
 # SPDX-FileCopyrightText: 2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-FileCopyrightText: 2012-2014 Jeremy Latt
+# SPDX-FileCopyrightText: 2014-2015 Edmund Huber
+# SPDX-FileCopyrightText: 2016-2020 Daniel Oaks
+# SPDX-FileCopyrightText: 2017-2020 Shivaram Lingamneni
 # SPDX-License-Identifier: MIT
 
 # This is the default config file for Ergo.
@@ -377,6 +381,17 @@ server:
     # send all 0's as the LUSERS (user counts) output to non-operators; potentially useful
     # if you don't want to publicize how popular the server is
     suppress-lusers: false
+
+    # publish additional key-value pairs in ISUPPORT (the 005 numeric).
+    # keys that collide with a key published by Ergo will be silently ignored.
+    additional-isupport:
+        #"draft/FILEHOST": "https://example.com/filehost"
+        #"draft/bazbat": "" # empty string means no value
+
+    # optionally map command alias names to existing ergo commands. most deployments
+    # should ignore this.
+    #command-aliases:
+        #"UMGEBUNG": "AMBIANCE"
 
 # account options
 accounts:
@@ -903,7 +918,7 @@ fakelag:
 roleplay:
     # are roleplay commands enabled at all? (channels and clients still have to
     # opt in individually with the +E mode)
-    enabled: true
+    enabled: false
 
     # require the "roleplay" oper capability to send roleplay messages?
     require-oper: false
@@ -913,6 +928,12 @@ roleplay:
 
     # add the real nickname, in parentheses, to the end of every roleplay message?
     add-suffix: true
+
+    # allow customizing the NUH's sent for NPC and SCENE commands
+    # NPC: the first %s is the NPC name, the second is the user's real nick
+    #npc-nick-mask: "*%s*!%s@npc.fakeuser.invalid"
+    # SCENE: the %s is the client's real nick
+    #scene-nick-mask: "=Scene=!%s@npc.fakeuser.invalid"
 
 # external services can integrate with the ircd using JSON Web Tokens (https://jwt.io).
 # in effect, the server can sign a token attesting that the client is present on
@@ -1062,3 +1083,21 @@ webpush:
     # by the client reconnecting to IRC. we also detect whether the client is no longer
     # successfully receiving push messages.
     expiration: 14d
+
+# HTTP API. we strongly recommend leaving this disabled unless you have a specific
+# need for it.
+api:
+    # is the API enabled at all?
+    enabled: false
+    # listen address:
+    listener: "127.0.0.1:8089"
+    # serve over TLS (strongly recommended if the listener is public):
+    #tls:
+        #cert: /mnt/config/ssl/live/fullchain.pem
+        #key: /mnt/config/ssl/live/privkey.pem
+    # one or more static bearer tokens accepted for HTTP bearer authentication.
+    # these must be strong, unique, high-entropy printable ASCII strings.
+    # to generate a new token, use `ergo gentoken` or:
+    # python3 -c "import secrets; print(secrets.token_urlsafe(32))"
+    bearer-tokens:
+        - "example"
