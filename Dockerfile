@@ -13,7 +13,8 @@ RUN make
 FROM code.nephatrine.net/nephnet/alpine-s6:latest
 LABEL maintainer="Daniel Wolf <nephatrine@gmail.com>"
 
-RUN apk add --no-cache mariadb mariadb-client
+RUN apk add --no-cache mariadb mariadb-client \
+  && rm -rf /tmp/* /var/tmp/*
 
 COPY --from=builder /root/ergo/default.yaml /etc/ergo/default.yaml
 COPY --from=builder /root/ergo/ergo.motd /etc/ergo/ergo.motd
