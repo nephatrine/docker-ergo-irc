@@ -4,17 +4,17 @@
 
 /bin/sleep 5
 
-if [[ ! -d /mnt/config/data/mariadb/ergo_history ]]; then
+if [ ! -d /mnt/config/data/mariadb/ergo_history ]; then
 	while ! /usr/bin/mariadb --protocol=socket -uroot -hlocalhost --socket=/var/run/mysqld/mysqld.sock --database=mysql --binary-mode -e 'SELECT 1' >/dev/null 2>&1; do
 		echo "waiting for mariadbd..."
 		/bin/sleep 5
 	done
 
-	if [[ -z "${MARIADB_ERGO_PASSWORD}" ]]; then
+	if [ -z "${MARIADB_ERGO_PASSWORD}" ]; then
 		echo "Please set MARIADB_ERGO_PASSWORD in your environment."
 		exit 1
 	fi
-	if [[ -z "${MARIADB_ROOT_PASSWORD}" ]]; then
+	if [ -z "${MARIADB_ROOT_PASSWORD}" ]; then
 		MARIADB_ROOT_PASSWORD="${MARIADB_ERGO_PASSWORD}"
 	fi
 

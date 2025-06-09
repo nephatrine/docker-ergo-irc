@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/command/with-contenv /bin/sh
 # SPDX-FileCopyrightText: 2025 Daniel Wolf <nephatrine@gmail.com>
 # SPDX-License-Identifier: ISC
 
