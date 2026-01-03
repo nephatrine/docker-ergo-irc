@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2025 Daniel Wolf <nephatrine@gmail.com>
+SPDX-FileCopyrightText: 2025-2026 Daniel Wolf <nephatrine@gmail.com>
 SPDX-License-Identifier: ISC
 -->
 
@@ -19,7 +19,7 @@ proxy to centralize your SSL/TLS setup in
 
 ## Supported Tags
 
-- `ergo-irc:2.16.0`: Ergo 2.16.0
+- `ergo-irc:2.17.0`: Ergo 2.17.0
 
 ## Software
 

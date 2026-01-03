@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-FileCopyrightText: 2025-2026 Daniel Wolf <nephatrine@gmail.com>
 # SPDX-License-Identifier: ISC
 
 # hadolint global ignore=DL3018
@@ -6,7 +6,7 @@
 # hadolint ignore=DL3007
 FROM code.nephatrine.net/nephnet/nxb-golang:latest AS builder
 
-ARG ERGO_VERSION=v2.16.0
+ARG ERGO_VERSION=v2.17.0
 RUN git -C /root clone -b "$ERGO_VERSION" --single-branch --depth=1 https://github.com/ergochat/ergo.git
 WORKDIR /root/ergo
 RUN make
