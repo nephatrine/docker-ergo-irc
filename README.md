@@ -5,11 +5,12 @@ SPDX-License-Identifier: ISC
 
 # Ergo IRCv3 Server
 
-[![NephCode](https://img.shields.io/static/v1?label=Git&message=NephCode&color=teal)](https://code.nephatrine.net/NephNET/docker-ergo-irc)
-[![GitHub](https://img.shields.io/static/v1?label=Git&message=GitHub&color=teal)](https://github.com/nephatrine/docker-ergo-irc)
-[![Registry](https://img.shields.io/static/v1?label=OCI&message=NephCode&color=blue)](https://code.nephatrine.net/NephNET/-/packages/container/ergo-irc/latest)
-[![DockerHub](https://img.shields.io/static/v1?label=OCI&message=DockerHub&color=blue)](https://hub.docker.com/repository/docker/nephatrine/ergo-irc/general)
+[![Git: NephCode](https://img.shields.io/static/v1?label=Git&message=NephCode&color=teal)](https://code.nephatrine.net/NephNET/docker-ergo-irc)
+[![Git: GitHub](https://img.shields.io/static/v1?label=Git&message=GitHub&color=teal)](https://github.com/nephatrine/docker-ergo-irc)
+[![OCI: NephCode](https://img.shields.io/static/v1?label=OCI&message=NephCode&color=blue)](https://code.nephatrine.net/NephNET/-/packages/container/ergo-irc/latest)
+[![OCI: DockerHub](https://img.shields.io/static/v1?label=OCI&message=DockerHub&color=blue)](https://hub.docker.com/repository/docker/nephatrine/ergo-irc/general)
 [![unRAID](https://img.shields.io/static/v1?label=unRAID&message=template&color=orange)](https://code.nephatrine.net/NephNET/unraid-containers)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 This is an Alpine-based container hosting an Ergo IRC server.
 
@@ -66,15 +67,15 @@ services:
       PGID: 1000
       MARIADB_ERGO_PASSWORD: hunter2
     ports:
-      - "6667:6667/tcp"
-      - "6697:6697/tcp"
-      - "8097:8097/tcp"
+      - 6667:6667/tcp
+      - 6697:6697/tcp
+      - 8097:8097/tcp
     volumes:
       - /mnt/containers/ergo-irc:/mnt/config
 ```
 
 ### docker run
 
-```bash
+```sh
 docker run --rm -ti code.nephatrine.net/nephnet/ergo-irc:latest /bin/bash
 ```
