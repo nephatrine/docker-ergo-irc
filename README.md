@@ -14,13 +14,19 @@ SPDX-License-Identifier: ISC
 
 This is an Alpine-based container hosting an Ergo IRC server.
 
+**IMPORTANT:** The container built currently defaults to using the MariaDB
+database backend as this was the default and only option prior to v2.18. It is
+likely that we will pivot to SQLite as the default when v2.19 releases, though
+MariaDB will remain installed so as to not break existing installations. You can
+still use the configuration to switch between MariaDB and SQLite.
+
 You can find example NGINX configuration if you'd like to use it as a reverse
 proxy to centralize your SSL/TLS setup in
 [this](https://github.com/ergochat/testnet.ergo.chat/tree/master) repo.
 
 ## Supported Tags
 
-- `ergo-irc:2.17.0`: Ergo 2.17.0
+- `ergo-irc:2.18.0`: Ergo 2.18.0
 
 ## Software
 

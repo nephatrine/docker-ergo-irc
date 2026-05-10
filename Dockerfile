@@ -6,16 +6,16 @@
 # hadolint ignore=DL3007
 FROM code.nephatrine.net/nephnet/nxb-golang:latest AS builder
 
-ARG ERGO_VERSION=v2.17.0
+ARG ERGO_VERSION=v2.18.0
 RUN git -C /root clone -b "$ERGO_VERSION" --single-branch --depth=1 https://github.com/ergochat/ergo.git
 WORKDIR /root/ergo
-RUN make
+RUN ERGO_BUILD_TAGS="i18n mysql sqlite" make
 
 # hadolint ignore=DL3007
 FROM code.nephatrine.net/nephnet/alpine-s6:latest
 LABEL maintainer="Daniel Wolf <nephatrine@gmail.com>"
 
-RUN apk add --no-cache mariadb mariadb-client \
+RUN apk add --no-cache mariadb mariadb-client sqlite \
   && rm -rf /tmp/* /var/tmp/*
 
 COPY --from=builder /root/ergo/default.yaml /etc/ergo/default.yaml
