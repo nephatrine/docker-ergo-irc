@@ -186,6 +186,10 @@ server:
     # if this is true, the motd is escaped using formatting codes like $c, $b, and $i
     motd-formatting: true
 
+    # send a configurable notice to clients immediately after they connect,
+    # as a way of detecting open proxies
+    #initial-notice: "*** Welcome to the Ergo IRC server"
+
     # idle timeouts for inactive clients
     idle-timeouts:
         # give the client this long to complete connection registration (i.e. the initial
@@ -400,6 +404,7 @@ server:
     # publish additional key-value pairs in ISUPPORT (the 005 numeric).
     # keys that collide with a key published by Ergo will be silently ignored.
     additional-isupport:
+        #"draft/ICON": "https://example.com/favicon.svg"
         #"draft/FILEHOST": "https://example.com/filehost"
         #"draft/bazbat": "" # empty string means no value
 
@@ -847,6 +852,16 @@ datastore:
         # this may be necessary to prevent middleware from closing your connections:
         #conn-max-lifetime: 180s
 
+    # connection information for SQLite (currently only used for persistent history)
+    sqlite:
+        enabled: false
+        # path to the SQLite database file
+        database-path: "/mnt/config/data/ergo_history.db"
+        # timeout when waiting for write lock
+        busy-timeout: 5s
+        # maximum concurrent connections
+        max-conns: 1
+
 # languages config
 languages:
     # whether to load languages
@@ -979,10 +994,12 @@ history:
     # in your country and the countries of your users.
     enabled: true
 
-    # how many channel-specific events (messages, joins, parts) should be tracked per channel?
+    # if the in-memory backend is enabled for a channel, how many channel-specific events
+    # (messages, joins, parts) should be retained?
     channel-length: 2048
 
-    # how many direct messages and notices should be tracked per user?
+    # if the in-memory backend is enabled for a user, how many direct messages
+    # and notices should be retained?
     client-length: 256
 
     # how long should we try to preserve messages?
@@ -1077,12 +1094,14 @@ history:
 
 # whether to allow customization of the config at runtime using environment variables,
 # e.g., ERGO__SERVER__MAX_SENDQ=128k. see the manual for more details.
-allow-environment-overrides: false
+allow-environment-overrides: true
 
 # metadata support for setting key/value data on channels and nicknames.
 metadata:
     # can clients store metadata?
     enabled: true
+    # if this is true, only server operators with the `metadata` capability can edit metadata:
+    operator-only-modification: false
     # how many keys can a client subscribe to?
     max-subs: 100
     # how many keys can be stored per entity?
