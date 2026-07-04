@@ -1,32 +1,34 @@
 #!/command/with-contenv /bin/sh
-# SPDX-FileCopyrightText: 2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-FileCopyrightText: 2025-2026 Daniel Wolf <nephatrine@gmail.com>
 # SPDX-License-Identifier: ISC
 
 # shellcheck shell=sh
 
 if [ ! -d /mnt/config/data/mariadb/ergo_history ]; then
-  echo "waiting for ergo_history..."
-  /bin/sleep 5
-  exit 1
+	echo "waiting for ergo_history..."
+	/bin/sleep 5
+	exit 1
 fi
 
 if [ ! -e "/mnt/config/etc/ircd.motd" ]; then
-  /command/s6-setuidgid guardian /bin/cp /etc/ergo/ergo.motd /mnt/config/etc/ircd.motd
+	/command/s6-setuidgid guardian /bin/cp /etc/ergo/ergo.motd /mnt/config/etc/ircd.motd
 fi
 /command/s6-setuidgid guardian /bin/cp /etc/ergo/ergo.motd /mnt/config/etc/ircd.motd.example
 
 if [ ! -e "/mnt/config/etc/ircd.yaml" ]; then
-  /command/s6-setuidgid guardian /bin/cp /etc/ergo/ircd.yaml /mnt/config/etc/ircd.yaml
-  if [ -n "${MARIADB_ERGO_PASSWORD}" ]; then
-    /command/s6-setuidgid guardian /bin/sed -i "s/hunter2/${MARIADB_ERGO_PASSWORD}/" /mnt/config/etc/ircd.yaml
-  fi
+	/command/s6-setuidgid guardian /bin/cp /etc/ergo/ircd.yaml /mnt/config/etc/ircd.yaml
+	if [ -n "${MARIADB_ERGO_PASSWORD}" ]; then
+		/command/s6-setuidgid guardian /bin/sed -i "s/hunter2/${MARIADB_ERGO_PASSWORD}/" /mnt/config/etc/ircd.yaml
+	fi
 fi
 /command/s6-setuidgid guardian /bin/cp /etc/ergo/default.yaml /mnt/config/etc/ircd.yaml.example
 
 if [ ! -d /mnt/config/data/ergo ]; then
-  /command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/data/ergo
+	/command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/data/ergo
 fi
-if grep -q "# mkcert" /mnt/config/etc/ircd.yaml; then
-  /command/s6-setuidgid guardian /usr/local/bin/ergo mkcerts --conf /mnt/config/etc/ircd.yaml
+if /bin/grep -q "# mkcert" /mnt/config/etc/ircd.yaml; then
+	/command/s6-setuidgid guardian /usr/local/bin/ergo mkcerts --conf /mnt/config/etc/ircd.yaml
 fi
 /command/s6-setuidgid guardian /usr/local/bin/ergo run --conf /mnt/config/etc/ircd.yaml
+
+# vim:ft=sh
